@@ -1,0 +1,7 @@
+{
+  "query": {
+    "display_name": "02_bronze",
+    "warehouse_id": "ba90f266beeaacb2",
+    "query_text": "-- 02_bronze.sql\n-- Goal: Bronze external table over raw Socrata JSON already present in S3.\n-- Assumption: your raw JSON files exist under:\n-- s3://public-crime-raw-dev-eu-west-1/bronze/lapd_crime/json/\n\nUSE CATALOG public_crime;\nUSE SCHEMA bronze;\n\n-- External table on JSON files (schema inferred from JSON keys written by your ingestion)\nCREATE TABLE IF NOT EXISTS lapd_crime_raw_json\nUSING JSON\nLOCATION 's3://public-crime-raw-dev-eu-west-1/bronze/lapd_crime/json/';\n\n-- Sanity\nSELECT COUNT(*) AS bronze_rows FROM lapd_crime_raw_json;\nSELECT * FROM lapd_crime_raw_json LIMIT 5;\n"
+  }
+}
