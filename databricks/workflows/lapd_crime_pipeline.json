@@ -1,0 +1,101 @@
+{
+  "name": "lapd-crime-sql-pipeline",
+  "run_as": {
+    "user_name": "mahima.thakur@sigmoidanalytics.com"
+  },
+  "tasks": [
+    {
+      "task_key": "00_uc_bootstrap",
+      "sql_task": {
+        "warehouse_id": "ba90f266beeaacb2",
+        "query": {
+          "query_id": "70629e20-2940-49db-be8b-a0c8a2cec40f"
+        }
+      }
+    },
+    {
+      "task_key": "01_external_location",
+      "depends_on": [
+        {
+          "task_key": "00_uc_bootstrap"
+        }
+      ],
+      "sql_task": {
+        "warehouse_id": "ba90f266beeaacb2",
+        "query": {
+          "query_id": "a95ed8a5-9922-4ba4-9453-d93cdb44856e"
+        }
+      }
+    },
+    {
+      "task_key": "02_bronze",
+      "depends_on": [
+        {
+          "task_key": "01_external_location"
+        }
+      ],
+      "sql_task": {
+        "warehouse_id": "ba90f266beeaacb2",
+        "query": {
+          "query_id": "208d5359-1ab5-4802-b0aa-bd28a35eb6dc"
+        }
+      }
+    },
+    {
+      "task_key": "03_silver_fact",
+      "depends_on": [
+        {
+          "task_key": "02_bronze"
+        }
+      ],
+      "sql_task": {
+        "warehouse_id": "ba90f266beeaacb2",
+        "query": {
+          "query_id": "c0d79448-21f6-492b-a4cf-43a96238e4ff"
+        }
+      }
+    },
+    {
+      "task_key": "04_silver_dim",
+      "depends_on": [
+        {
+          "task_key": "03_silver_fact"
+        }
+      ],
+      "sql_task": {
+        "warehouse_id": "ba90f266beeaacb2",
+        "query": {
+          "query_id": "41db5956-60a1-48f4-be18-8cdd8759d4d9"
+        }
+      }
+    },
+    {
+      "task_key": "05_gold_agg_1",
+      "depends_on": [
+        {
+          "task_key": "04_silver_dim"
+        }
+      ],
+      "sql_task": {
+        "warehouse_id": "ba90f266beeaacb2",
+        "query": {
+          "query_id": "799718b6-328a-451f-9cee-632ed8a081f2"
+        }
+      }
+    },
+    {
+      "task_key": "06_gold_agg_2",
+      "depends_on": [
+        {
+          "task_key": "05_gold_agg_1"
+        }
+      ],
+      "sql_task": {
+        "warehouse_id": "ba90f266beeaacb2",
+        "query": {
+          "query_id": "85c04578-518e-4b12-b2a2-c940d09858b4"
+        }
+      }
+    }
+  ]
+}
