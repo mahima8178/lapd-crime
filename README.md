@@ -4,6 +4,13 @@ A complete data pipeline for ingesting, processing, and analyzing LAPD crime dat
 
 ## Quick Start
 
+### Automated (Recommended)
+```bash
+# Run everything from scratch in one command
+./scripts/run_from_scratch.sh
+```
+
+### Manual Steps
 1. **Read the Getting Started Guide**: [GETTING_STARTED.md](GETTING_STARTED.md)
 2. **Ingest Data**: `python scripts/ingest_socrata_to_s3.py`
 3. **Setup Databricks**: `./scripts/setup_databricks_job.sh lapd-crime <warehouse_id>`

@@ -2,7 +2,32 @@
 
 This guide will walk you through setting up and running the complete LAPD crime data pipeline from Socrata API to Databricks.
 
-## Prerequisites
+## 🚀 Quick Start (Automated)
+
+**Easiest way to run everything from scratch:**
+
+```bash
+# Run the complete pipeline automation
+./scripts/run_from_scratch.sh [profile] [warehouse_id] [dataset_id] [s3_bucket] [s3_prefix]
+
+# Example with defaults:
+./scripts/run_from_scratch.sh lapd-crime ba90f266beeaacb2 2nrs-mtv8 public-crime-raw-dev-eu-west-1 bronze/lapd_crime/json
+```
+
+This script will:
+1. ✅ Check all prerequisites
+2. ✅ Ingest data from Socrata to S3
+3. ✅ Setup Databricks (permissions, queries, workflow)
+4. ✅ Create/update the Databricks job
+5. ✅ Run the job and monitor completion
+
+**That's it!** The script handles everything automatically.
+
+---
+
+## Manual Setup (Step-by-Step)
+
+If you prefer to run steps manually or need more control:
 
 ### 1. Required Software
 

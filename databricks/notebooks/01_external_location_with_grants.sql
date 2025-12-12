@@ -7,7 +7,6 @@
 GRANT CREATE EXTERNAL LOCATION ON METASTORE TO `mahima.thakur@sigmoidanalytics.com`;
 
 -- Grant permission to use existing storage credential
-GRANT USE CREDENTIAL ON STORAGE CREDENTIAL `db_s3_credentials_databricks-s3-ingest-5d3d2` TO `mahima.thakur@sigmoidanalytics.com`;
 
 -- Create external location using existing credential
 CREATE EXTERNAL LOCATION IF NOT EXISTS `db_s3_external_databricks-s3-ingest`
