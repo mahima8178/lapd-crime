@@ -9,7 +9,7 @@
       "sql_task": {
         "warehouse_id": "ba90f266beeaacb2",
         "query": {
-          "query_id": "84d15b27-51f2-4525-b2cf-f0f301fda7a4"
+          "query_id": "b6d917cf-5c33-446a-8d88-f94933de120f"
         }
       }
     },
@@ -23,7 +23,7 @@
       "sql_task": {
         "warehouse_id": "ba90f266beeaacb2",
         "query": {
-          "query_id": "3ac7827c-2f5c-40bf-aa4a-abdeb580659d"
+          "query_id": "9571b759-c7dd-4ee0-800a-4507f7265ab1"
         }
       }
     },
@@ -37,7 +37,7 @@
       "sql_task": {
         "warehouse_id": "ba90f266beeaacb2",
         "query": {
-          "query_id": "78090643-93c5-4897-8589-8d04ef394be0"
+          "query_id": "9b8f7192-a6e3-4713-b3c4-8bcd7c23f86a"
         }
       }
     },
@@ -51,7 +51,7 @@
       "sql_task": {
         "warehouse_id": "ba90f266beeaacb2",
         "query": {
-          "query_id": "04b09d5c-de40-48cb-abda-b5f5c76d5f15"
+          "query_id": "d9475f9f-c9d9-463a-b18d-057c406baa4c"
         }
       }
     },
@@ -65,7 +65,7 @@
       "sql_task": {
         "warehouse_id": "ba90f266beeaacb2",
         "query": {
-          "query_id": "05527825-ea99-4d24-ba5b-b9a388da8988"
+          "query_id": "20f60f33-f29b-4d69-94a9-16df137d652c"
         }
       }
     },
@@ -79,7 +79,7 @@
       "sql_task": {
         "warehouse_id": "ba90f266beeaacb2",
         "query": {
-          "query_id": "d7d09180-320c-4d69-ab4c-1519daae1aa3"
+          "query_id": "76cd902e-79b8-45e1-842e-9d85f73eca5b"
         }
       }
     },
@@ -93,7 +93,7 @@
       "sql_task": {
         "warehouse_id": "ba90f266beeaacb2",
         "query": {
-          "query_id": "efb44878-f2be-46ad-bf11-f96ba9a18441"
+          "query_id": "41ada8ea-fa1d-4436-9dd2-56a3fca0423b"
         }
       }
     }

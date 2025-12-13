@@ -30,8 +30,8 @@ echo "Step 2: Creating SQL queries from files..."
 
 # Step 3: Update workflow with query IDs
 echo ""
-echo "Step 3: Updating workflow JSON with query IDs..."
-./scripts/update_workflow_with_query_ids.sh
+echo "Step 3: Query IDs saved in build/query_ids/"
+echo "Note: Update databricks/workflows/lapd_crime_pipeline.json manually with query IDs from build/query_ids/"
 
 echo ""
 echo "=========================================="

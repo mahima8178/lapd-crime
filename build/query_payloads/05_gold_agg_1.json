@@ -2,6 +2,6 @@
   "query": {
     "display_name": "05_gold_agg_1",
     "warehouse_id": "ba90f266beeaacb2",
-    "query_text": ""
+    "query_text": "-- 05_gold_agg_1.sql\n-- Gold #1: daily counts by area + crime type\n\nUSE CATALOG public_crime;\nUSE SCHEMA gold;\n\nCREATE TABLE IF NOT EXISTS crime_daily_area_summary AS\nSELECT\n  occurrence_date,\n  area,\n  area_name,\n  crm_cd,\n  crm_cd_desc,\n  COUNT(*) AS incidents,\n  AVG(vict_age) AS avg_vict_age\nFROM public_crime.silver.crime_event_clean\nGROUP BY\n  occurrence_date, area, area_name, crm_cd, crm_cd_desc;\n\n-- Sanity\nSELECT * FROM crime_daily_area_summary ORDER BY occurrence_date DESC LIMIT 20;\n"
   }
 }

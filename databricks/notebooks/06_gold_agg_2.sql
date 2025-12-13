@@ -1,12 +1,11 @@
--- 06_gold_agg_2.sql
--- Gold #2: victim profile x crime type x month
-
 USE CATALOG public_crime;
 USE SCHEMA gold;
 
-CREATE TABLE IF NOT EXISTS crime_type_victim_summary AS
+CREATE TABLE IF NOT EXISTS crime_type_victim_summary
+USING DELTA
+AS
 SELECT
-  DATE_TRUNC('month', occurrence_date) AS month,
+  CAST(DATE_TRUNC('month', CAST(occurrence_date AS DATE)) AS DATE) AS montH,
   crm_cd,
   crm_cd_desc,
   CASE
@@ -20,9 +19,11 @@ SELECT
   vict_sex,
   vict_descent,
   COUNT(*) AS incidents
-FROM public_crime.silver.crime_event_clean
+FROM silver.crime_event_clean
 GROUP BY
   month, crm_cd, crm_cd_desc, age_band, vict_sex, vict_descent;
 
--- Sanity
-SELECT * FROM crime_type_victim_summary ORDER BY month DESC, incidents DESC LIMIT 50;
+SELECT * FROM crime_type_victim_summary
+
+
+

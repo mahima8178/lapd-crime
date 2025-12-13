@@ -2,6 +2,6 @@
   "query": {
     "display_name": "04_silver_dim",
     "warehouse_id": "ba90f266beeaacb2",
-    "query_text": ""
+    "query_text": "-- 04_silver_dim.sql\n-- Goal: Silver dimension table for location/premise.\n-- This is your 2nd silver layer.\n\nUSE CATALOG public_crime;\nUSE SCHEMA silver;\n\nCREATE TABLE IF NOT EXISTS dim_location AS\nSELECT\n  SHA2(CONCAT_WS('|',\n    COALESCE(CAST(area AS STRING), ''),\n    COALESCE(area_name, ''),\n    COALESCE(rpt_dist_no, ''),\n    COALESCE(CAST(premis_cd AS STRING), ''),\n    COALESCE(premis_desc, '')\n  ), 256) AS loc_hash,\n  area,\n  area_name,\n  rpt_dist_no,\n  premis_cd,\n  premis_desc,\n  lat,\n  lon\nFROM public_crime.silver.crime_event_clean\nQUALIFY ROW_NUMBER() OVER (\n  PARTITION BY area, area_name, rpt_dist_no, premis_cd, premis_desc, lat, lon\n  ORDER BY updated_at_ts DESC NULLS LAST\n) = 1;\n\n-- Sanity\nSELECT COUNT(*) AS dim_rows FROM dim_location;\nSELECT * FROM dim_location LIMIT 5;\n"
   }
 }

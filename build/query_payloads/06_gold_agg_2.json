@@ -2,6 +2,6 @@
   "query": {
     "display_name": "06_gold_agg_2",
     "warehouse_id": "ba90f266beeaacb2",
-    "query_text": ""
+    "query_text": "-- 06_gold_agg_2.sql\n-- Gold #2: victim profile x crime type x month\n\nUSE CATALOG public_crime;\nUSE SCHEMA gold;\n\nCREATE TABLE IF NOT EXISTS crime_type_victim_summary AS\nSELECT\n  DATE_TRUNC('month', occurrence_date) AS month,\n  crm_cd,\n  crm_cd_desc,\n  CASE\n    WHEN vict_age IS NULL THEN 'UNKNOWN'\n    WHEN vict_age < 18 THEN '0-17'\n    WHEN vict_age < 30 THEN '18-29'\n    WHEN vict_age < 45 THEN '30-44'\n    WHEN vict_age < 60 THEN '45-59'\n    ELSE '60+'\n  END AS age_band,\n  vict_sex,\n  vict_descent,\n  COUNT(*) AS incidents\nFROM public_crime.silver.crime_event_clean\nGROUP BY\n  month, crm_cd, crm_cd_desc, age_band, vict_sex, vict_descent;\n\n-- Sanity\nSELECT * FROM crime_type_victim_summary ORDER BY month DESC, incidents DESC LIMIT 50;\n"
   }
 }

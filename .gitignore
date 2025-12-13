@@ -3,3 +3,8 @@
 terraform.tfstate
 terraform.tfstate.backup
 *.log
+
+# Build artifacts (generated files)
+build/
+*.id
+/tmp/
