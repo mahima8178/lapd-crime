@@ -60,12 +60,12 @@ Gold Delta (Aggregations / BI-ready)
 
 ## 3. Why Unity Catalog (UC) Instead of Hive Metastore
 
-### Hive Metastore (rejected)
+### Hive Metastore (WHY NOT)
 - Workspace-scoped
 - Cluster-centric
-- Poor S3 governance
+- Less S3 governance
 - Breaks on SQL-only compute
-- No external-location abstraction
+- Not explicit external-location abstraction
 
 ### Unity Catalog (chosen)
 - Centralized governance
