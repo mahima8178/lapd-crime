@@ -1,52 +1,50 @@
-```markdown
 # LAPD Crime Data Pipeline  
 **Critical Technical Analysis, Trade-offs, and Future Improvements**
 
-A production-grade **Databricks SQL + Unity Catalog + AWS S3** batch pipeline for LAPD crime data sourced from the Socrata Open Data API.  
-Designed explicitly for **2025 Databricks constraints**: SQL Warehouse–only compute, UC-governed storage, cross-account AWS IAM, and Delta Lake.
+**Databricks SQL + Unity Catalog + AWS S3** batch pipeline for LAPD crime data sourced from the Socrata Open Data API.  
+Explicitly for **2025 Databricks constraints**: SQL Warehouse–only compute, UC-governed storage, cross-account AWS IAM, and Delta Lake.
 
 ---
 
-## 1. What This Project Actually Solves (Clearly)
+## 1. What This Project Actually Solves
 
 This project demonstrates how to:
 
 - Ingest **public JSON data** from Socrata into **AWS S3**
 - Govern that data using **Unity Catalog external locations**
-- Process everything using **Databricks SQL only** (no Spark clusters, no notebooks with Python execution)
-- Implement a **Bronze → Silver → Gold** medallion model that:
-  - is idempotent
-  - is schema-controlled
-  - works on **Serverless SQL Warehouse**
-- Orchestrate end-to-end execution using **Databricks Jobs (SQL tasks)**
+- Process everything using **Databricks SQL only**  
+  (no Spark clusters, no Python notebooks running inside Databricks)
+- Implement a **Bronze → Silver → Gold** medallion model that is:
+  - idempotent
+  - schema-controlled
+  - compatible with **Serverless SQL Warehouses**
+- Orchestrate the full pipeline using **Databricks Jobs with SQL tasks**
 
 This is **not** a demo notebook project.  
-It is an **enterprise-style SQL-first pipeline**.
+It is an **enterprise-style, SQL-first pipeline** aligned with modern Databricks best practices.
 
 ---
 
-## 2. High-Level Architecture (Why It Looks This Way)
-
-```
-
+## 2. High-Level Architecture
 Socrata API
 |
 | (Python, outside Databricks)
 v
 AWS S3 (raw JSON)
 |
-|  Unity Catalog External Location
+| Unity Catalog External Location
 v
 Databricks SQL Warehouse
 |
-|  COPY INTO (Bronze Delta)
+| COPY INTO (Bronze Delta)
 v
 Silver Delta (Typed + Deduped)
 |
 v
 Gold Delta (Aggregations / BI-ready)
 
-```
+
+
 
 ### Key architectural constraints that shaped this design:
 
@@ -73,19 +71,16 @@ Gold Delta (Aggregations / BI-ready)
 - Centralized governance
 - Works with **serverless SQL**
 - Explicit S3 trust model:
-```
 
-Storage Credential → External Location → Table
 
-```
 - Required for:
-- `COPY INTO`
-- Cross-account IAM
-- Least-privilege access
+  - `COPY INTO`
+  - Cross-account IAM
+  - Least-privilege access
 
 **Trade-off:**  
 UC adds upfront complexity (roles, grants, locations).  
-But once configured, failures are deterministic and debuggable.
+Once configured, failures are deterministic and debuggable.
 
 ---
 
@@ -109,7 +104,7 @@ But once configured, failures are deterministic and debuggable.
 - No predicate pushdown
 - Requires downstream casting
 
-**Correct choice for public APIs**
+Correct choice for **public APIs**.
 
 ---
 
@@ -126,14 +121,14 @@ But once configured, failures are deterministic and debuggable.
 
 **Why**
 - Socrata updates records post-publication
-- Need replay-safe logic
-- Enables CDC if needed later
+- Replay-safe batch logic required
+- CDC-compatible design
 
 **Trade-offs**
-- Recomputes latest state per run (not row-level CDC)
-- More CPU than naive append
+- Recomputes latest state per run
+- Higher compute than naive append
 
-**Acceptable for batch public data**
+Acceptable for batch public datasets.
 
 #### Silver Dimension: `dim_location`
 
@@ -144,7 +139,7 @@ But once configured, failures are deterministic and debuggable.
 
 **Why**
 - Simplifies BI joins
-- Avoids repeated text fields in gold
+- Reduces repeated string columns in gold
 
 ---
 
@@ -153,32 +148,30 @@ But once configured, failures are deterministic and debuggable.
 #### Gold 1: Daily Area Summary
 - Grain: day × area × crime type
 - BI-friendly fact table
-- Stable for dashboards
+- Stable dashboard input
 
 #### Gold 2: Victim Profile Summary
 - Grain: month × crime × demographic
-- Designed for slicing, not drill-down
+- Optimized for slicing, not drill-down
 
 **Trade-offs**
-- Pre-aggregated (less flexible than raw silver)
-- Requires recompute if logic changes
+- Pre-aggregated (less flexible than Silver)
+- Requires recompute on logic change
 
 ---
 
 ## 5. Orchestration Design (SQL Jobs Only)
 
-### Why SQL Jobs, not notebooks or Airflow
+### Why SQL Jobs (not notebooks or Airflow)
 
 - Databricks Free / Trial = SQL Warehouse only
 - No long-running clusters
 - SQL tasks are:
-- version-controlled
-- deterministic
-- easier to audit
+  - version-controlled
+  - deterministic
+  - auditable
 
 **Job Structure**
-```
-
 00_uc_bootstrap
 01_external_location
 02_bronze
@@ -187,7 +180,8 @@ But once configured, failures are deterministic and debuggable.
 05_gold_agg_1
 06_gold_agg_2
 
-```
+
+
 
 Each task:
 - Runs on SQL Warehouse
@@ -198,44 +192,44 @@ Each task:
 
 ## 6. Known Limitations (Honest Assessment)
 
-### 1. Incremental Logic is Coarse-Grained
+### 1. Incremental Logic Is Coarse-Grained
 - File-level incremental (`COPY INTO`)
 - Silver dedup recomputes latest per `dr_no`
 
-**Why**
+**Reason**
 - Socrata does not guarantee strict append semantics
-- Safer than relying on timestamps alone
+- Safer than timestamp-only logic
 
 ### 2. No Streaming / Near-Real-Time
 - Batch-only by design
 
-**Why**
+**Reason**
 - Public dataset
 - SQL Warehouse constraints
-- Simplicity > latency
+- Simplicity prioritized over latency
 
 ### 3. External Python Dependency
 - Socrata ingestion runs outside Databricks
 
-**Why**
+**Reason**
 - SQL Warehouse cannot call REST APIs
-- Correct architectural separation
+- Correct separation of concerns
 
 ---
 
 ## 7. Security Review
 
-### What is done correctly
-- No AWS keys in Databricks
+### Implemented Correctly
+- No AWS keys stored in Databricks
 - IAM role assumption with External ID
 - UC-governed S3 access
-- No wildcard S3 access beyond required prefixes
+- Least-privilege bucket access
 
-### What is intentionally avoided
+### Intentionally Avoided
 - DBFS mounts
 - Instance profiles
 - Hard-coded credentials
-- Workspace-scoped permissions
+- Workspace-scoped storage access
 
 ---
 
@@ -244,10 +238,10 @@ Each task:
 | Layer | Cost Driver | Notes |
 |-----|------------|------|
 | Bronze | Storage | JSON + Delta overhead |
-| Silver | Compute | Dedup + casts |
-| Gold | Compute | Group-bys |
+| Silver | Compute | Dedup + casting |
+| Gold | Compute | Aggregations |
 
-**Optimizations already applied**
+**Optimizations applied**
 - Narrow schemas in Silver
 - Hash keys for joins
 - SQL-only execution (no cluster spin-up)
@@ -256,24 +250,23 @@ Each task:
 
 ## 9. Improvements to Make (Next Iteration)
 
-### Short-term (easy wins)
-- Add `OPTIMIZE` on Silver/Gold
-- Add Z-ORDER on `occurrence_date`, `area`
-- Add row counts + freshness checks
+
+Airflow /Terrform Integration
+### Short-term
+- `OPTIMIZE` Silver and Gold tables
+- Z-ORDER on `occurrence_date`, `area`
+- Row-count and freshness checks
 
 ### Medium-term
-- Use Socrata `:updated_at` watermark for smarter incremental Silver
-- Introduce audit table:
-  - run_id
-  - row counts
-  - timestamps
-- Add data quality rules (NULL %, domain checks)
+- Use Socrata `:updated_at` watermark
+- Add pipeline audit table (run_id, counts)
+- Add data quality checks
 
 ### Long-term / Enterprise
 - CDC-driven Gold updates
 - Multi-workspace UC sharing
-- BI semantic layer (Databricks Lakeview / dbt-style models)
-- Automated schema evolution alerts
+- BI semantic layer (Lakeview / dbt-style)
+- Schema evolution alerts
 
 ---
 
@@ -281,14 +274,14 @@ Each task:
 
 **Good fit**
 - SQL-heavy data engineers
-- Governance-first environments
-- Serverless / managed compute
+- Governance-first organizations
+- Serverless compute environments
 - Public or semi-structured batch data
 
 **Not ideal for**
 - Low-latency streaming
-- Python-centric transformations
-- ML feature pipelines
+- Python-heavy transformations
+- ML feature engineering pipelines
 
 ---
 
@@ -296,13 +289,12 @@ Each task:
 
 This project intentionally favors:
 
-- **Correctness over cleverness**
 - **Governance over convenience**
 - **SQL determinism over Spark flexibility**
 
-It reflects how **Databricks is meant to be used in 2025** for governed, serverless, AWS-backed analytics.
+  Beginner friendly how to0 **Databricks is designed to be used in 2025** for governed, serverless, AWS-backed analytics.
 
-The complexity you experienced is **not a personal failure**—it is the real cost of doing things *the right way* on modern Databricks.
 
----
-```
+
+
+
