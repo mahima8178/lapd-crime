@@ -13,15 +13,12 @@ This project demonstrates how to:
 - Ingest **public JSON data** from Socrata into **AWS S3**
 - Govern that data using **Unity Catalog external locations**
 - Process everything using **Databricks SQL only**  
-  (no Spark clusters, no Python notebooks running inside Databricks)
 - Implement a **Bronze → Silver → Gold** medallion model that is:
   - idempotent
   - schema-controlled
   - compatible with **Serverless SQL Warehouses**
 - Orchestrate the full pipeline using **Databricks Jobs with SQL tasks**
 
-This is **not** a demo notebook project.  
-It is an **enterprise-style, SQL-first pipeline** aligned with modern Databricks best practices.
 
 ---
 
