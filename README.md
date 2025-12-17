@@ -6,7 +6,7 @@ Explicitly for **2025 Databricks constraints**: SQL Warehouse–only compute, UC
 
 ---
 
-## 1. What This Project Actually Solves
+## 1. About so
 
 This project demonstrates how to:
 
