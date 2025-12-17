@@ -78,9 +78,6 @@ Gold Delta (Aggregations / BI-ready)
   - Cross-account IAM
   - Least-privilege access
 
-**Trade-off:**  
-UC adds upfront complexity (roles, grants, locations).  
-Once configured, failures are deterministic and debuggable.
 
 ---
 
@@ -119,14 +116,11 @@ Correct choice for **public APIs**.
 - Deterministic latest-record selection
 - Stable hash generation
 
-**Why**
+
 - Socrata updates records post-publication
 - Replay-safe batch logic required
 - CDC-compatible design
 
-**Trade-offs**
-- Recomputes latest state per run
-- Higher compute than naive append
 
 Acceptable for batch public datasets.
 
@@ -137,7 +131,6 @@ Acceptable for batch public datasets.
 - Generates surrogate hash key
 - One row per unique location
 
-**Why**
 - Simplifies BI joins
 - Reduces repeated string columns in gold
 
@@ -154,9 +147,6 @@ Acceptable for batch public datasets.
 - Grain: month × crime × demographic
 - Optimized for slicing, not drill-down
 
-**Trade-offs**
-- Pre-aggregated (less flexible than Silver)
-- Requires recompute on logic change
 
 ---
 
@@ -164,7 +154,7 @@ Acceptable for batch public datasets.
 
 ### Why SQL Jobs (not notebooks or Airflow)
 
-- Databricks Free / Trial = SQL Warehouse only
+- Databricks Free Trial So SQL Warehouse only
 - No long-running clusters
 - SQL tasks are:
   - version-controlled
@@ -190,7 +180,7 @@ Each task:
 
 ---
 
-## 6. Known Limitations (Honest Assessment)
+## 6. Known Limitations
 
 ### 1. Incremental Logic Is Coarse-Grained
 - File-level incremental (`COPY INTO`)
@@ -273,15 +263,8 @@ Airflow /Terrform Integration
 ## 10. Who This Architecture Is For
 
 **Good fit**
-- SQL-heavy data engineers
-- Governance-first organizations
 - Serverless compute environments
 - Public or semi-structured batch data
-
-**Not ideal for**
-- Low-latency streaming
-- Python-heavy transformations
-- ML feature engineering pipelines
 
 ---
 
