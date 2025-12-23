@@ -1,5 +1,5 @@
 # LAPD Crime Data Pipeline  
-**Critical Technical Analysis, Trade-offs, and Future Improvements**
+**Analysis, Trade-offs, and Future Improvements**
 
 **Databricks SQL + Unity Catalog + AWS S3** batch pipeline for LAPD crime data sourced from the Socrata Open Data API.  
 Explicitly for **2025 Databricks constraints**: SQL Warehouse–only compute, UC-governed storage, cross-account AWS IAM, and Delta Lake.
